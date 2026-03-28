@@ -1,0 +1,102 @@
+[=====================================================]
+
+                   #  BLACKARCH-INSTALL EASY MODE#
+
+[=====================================================]
+
+## Deskripsi : Ini Adalah penginstalan blackarch linux full 23GB untuk ke penyimpanan
+                    internal anda, meskipun anda bisa live booting blackarch ini di usb
+                    tapi anda juga bisa menginstallnya di penyimpanan internal anda dengan
+                    mudah, dan berikut langkahnya beserta error fix gpg.
+
+                    Minimum Requirements:
+                    RAM 2GB, Paling lancar 4GB-8GB
+                    Storage Minimal 70 GB (Hanya untuk sistem) Rekomendasi 130GB
+                    CPU minimum x86_64 - dan semua komputer sekarang mendukung ini
+
+## Langkah 1. Pastikan Kamu Mendownload Rufus atau ventoy untuk bisa booting ke blackarch
+                        rufus dan ventoy itu menjadi bootable media dan mereka bisa mengatur setor boot, jadi si ventoy dan rufus
+                        itu bertindak sebagai penengah, jadi jika kalian hanya mengisinya dengan *.iso saja, itu tidak akan terbaca
+
+##  Langkah 2. Silahkan matikan pc atau laptop kalian dan masuk ke menu bios, atau booting dan biasanya rufus atau ventoy
+                            akan terdeteksi sebagai bootable, dan kalian masuk ke menu tersebut, dan jika tidak bisa pastikan kalian mematikan
+                            secure boot pada laptop modern.
+
+##  Langkah 3. Setelah kalian boot ke blakarch kalian akan di suruh memasukan username dan passwordnya blackarch
+                            Username : root
+                            Password : blackarch
+                            Dan Ketik di terminal anda "blackarch-install", untuk masuk ke terminal anda bisa klik kanan dan klik terminal
+
+## Langkah 4. Setelah masuk ke penginstallan anda akan dimintai Pilihan Penginstallan
+                            a.Penginstallan Online
+                            b.penginstallan offline
+                            dan kita punya penginstallan offline yang 22GB jadi kita pilih yang offline
+
+## Langkah 5. Anda akan di mintai dan di suruh memilih keterangan tentang output dari apa yang anda input
+                          1.Quiet(Default)
+                          2.Verbose(Menampilkan Log)
+
+## Langkah 6. Set Locale yaitu pilih bahasa Locale
+                           Default(en_US.UTF-8) dan kita pilih itu
+
+## Langkah 7. Set keymap, jadi set keymap ini berfungsi sebagai pendeteksi keyboard kita karena kita sering memakai keyboard dari us
+                           maka kita set ke "us"
+
+## Langkah 8. yaitu hostname, hostname ini bertindak sebagai nama host kalian saat terhubung ke internet atau router
+                            contoh: kalian connect ke wifi kalian, hp atau laptop kaian itu punya hostname yang sebagai identifikasi nama perangkat
+                            seperti laptop saya, saya namakan "prince-hp"
+
+## Langkah 9.------------------ INI YANG PALING PENTING ------------------
+                        Yaitu Partisi Disk jika kalian menggunakan windows atau yang lain jangan sampai salah pilih
+                        biasanya internal itu /dev/sda dan external akan tertulis /dev/sdb
+
+                        >/dev/sda
+                        >/dev/sdb
+
+                        Kalian pilih yang sdb jika punya ssd atau hdd external, INGAT jangan sampai salah pilih
+                        pilih yang ada free spacenya, dan jangan sampai salah pilih ke flashdisk karena jika kamu memilih itu
+                        maka yang terjadi file untuk instalasi hilang dan instalasi gagal
+                        dan juga jika kalian salah pilih disk internal maka disk itu akan TERHAPUS datanya
+
+                        Kalian akan di suruh memilih meletakkan os ini berdampingan dengan os lain y/n:
+                        karena kita pakai ssd external atau hdd maka kita pilih no
+
+## Langkah 10. Kita akan menggunakan partisi custom,swap,data dan filesystem
+                            maka kita pilih "y"
+
+                            Setelah itu kalian akan di tanya "mulai dengan memformat partisi atau partisi kosong"
+                            jawab "y"
+
+                        -Setelah itu kalian pilih type labelnya
+                            *gpt
+                            *dos
+                            *sgi
+                            *sun
+                            saya plih gpt karena sudah terbiasa dengannya jadi kita pilih gpt.
+
+                            INGAT gpt untuk efi dan dos untuk mbr
+                            dan setelah itu kita akan bikin partisi disk nya
+
+                            =====DISK TERSEDIA 512GB====
+
+                            /dev/sda1 - mediaboot - type = bootable atau efi = 1GB
+                            /dev/sda2 - swap atau untuk swap storage dan ram = 2GB
+                            /dev/sda3 - filesystem = 70GB - boleh di lebihkan jika ingin update besar karena toolsnya itu sangat banyak
+                            /dev/sda4 - data = sisanya (perintah manualnya adalah "mkfs.exfat /dev/sda4")
+
+                            Setelah itu write dan exit, anda akan mendapatkan tawaran, encrypted root kita jawab "n" karena kita mau cepat
+
+                            dan INGAT
+
+                            boot partition /dev/sda1 type filesystem(ext4) karena lebih stabil
+                            root partition /dev/sda3 type filesystem(ext4)
+                            swap partition
+
+## Langkah 11. Setting password untuk root
+                            dan juga jangan lupa tambahkan user biasa saat di tanya apakah kamu mau membuat user biasa? jawab y
+                            "masukkan username user biasa"
+                            dan  setting password
+
+## Langkah 12. Setting timezone disini kalian defaultkan saja timezonenya untuk indonesia2
+
+##Langkah 13. Dan reboot system
