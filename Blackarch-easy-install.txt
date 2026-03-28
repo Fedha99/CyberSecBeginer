@@ -99,4 +99,6 @@
 
 ## Langkah 12. Setting timezone disini kalian defaultkan saja timezonenya untuk indonesia2
 
-##Langkah 13. Dan reboot system
+## Langkah 13. Dan reboot system
+
+Untuk Selengkapnya ada di channel youtube dan ini linknya https://youtu.be/HjwGnZuJWbA
