@@ -139,12 +139,12 @@ read -p "Lakukan Subdomain Discovery? Y/n" subd
   if [[ $subd == Y || $subd == y ]]; then
     echo "Mencoba menemukan Subdomain..."
     subfinder -d $domain -o subdomain-dis.txt
+	read -p "Scan Teknologi Domain? Y/n" tech
+		if [[ $tech == y || $tech == Y]]; then
+			
   else
     echo "[!] Pemindaian tidak dilakukan"
   fi
 
-#====Detect Technology====#
-echo "[~] Melakukan Pemindaian Teknologi $domain"
-read -p "Pindai Teknologi $domain? Y/n" http-det
-
+		
 		
