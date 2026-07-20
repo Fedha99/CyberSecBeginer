@@ -1,14 +1,14 @@
 #!/bin/bash
 echo '''
-    ____       _      _  __ ____                      
-   / __ \_____(_)___ | |/ // __ \___  _________  ____ 
+    ____       _      _  __ ____
+   / __ \_____(_)___ | |/ // __ \___  _________  ____
   / /_/ / ___/ / __ \|   // /_/ / _ \/ ___/ __ \/ __ \
  / ____/ /  / / / / /   |/ _, _/  __/ /__/ /_/ / / / /
-/_/   /_/  /_/_/ /_/_/|_/_/ |_|\___/\___/\____/_/ /_/ 
-		Recon-Combo-By-Prince--                                                      
+/_/   /_/  /_/_/ /_/_/|_/_/ |_|\___/\___/\____/_/ /_/
+		Recon-Combo-By-Prince--
 '''
 
-# Cek root. $EUID sudah benar, ditutup "fi" (bukan "done")
+# ==== CEK ROOT ====
 if [ ! "$EUID" == 0 ]; then
 	echo "Jalankan Script ini dengan root"
 	exit 1
@@ -34,7 +34,6 @@ for tools in nmap gobuster nuclei subfinder dirb; do
 				. /etc/os-release
 				OS=$ID
 
-				# case ditutup "esac", bukan "done"
 				case "$OS" in
 					ubuntu|kali|parrot|mint|debian)
 						echo "[~] Menginstall Tools Pada Linux Berbasis ($OS)..."
@@ -63,99 +62,114 @@ for tools in nmap gobuster nuclei subfinder dirb; do
 							fi
 						fi
 						;;
-					# Pattern default kalau OS gak dikenali
-					# (dulu ini "echo ... exit 1 done" nyasar di luar pattern, sekarang jadi *) yang benar
 					*)
 						echo "[!] OS tidak dikenali, Exit.."
 						sleep 1
 						exit 1
 						;;
-				esac   # <- tutup case
-			fi         # <- tutup if -f /etc/os-release
-		fi             # <- tutup if install Y/n
-	fi                 # <- tutup if command -v tools
-done                   # <- tutup for tools (dulu ini "done" nyasar duluan sebelum loop selesai)
+				esac
+			fi
+		fi
+	fi
+done
 
-# ==== BAGIAN SCANNING, DILUAR LOOP TOOLS ====
-# (dulu bagian ini nyangkut DI DALAM loop for, sekarang dipindah keluar)
+# ==== BAGIAN SCANNING (NMAP) ====
 read -p "[~] Pilih Type Scanning (Nmap,masscan):" scan
 
-if [[ $scan == nmap || $scan == Nmap ]]; then
-	# Nama variabel gak boleh diawali angka & gak boleh ada spasi di sekitar "="
-	# 1 = "..."   -->   cmd1="..."
-	cmd1="nmap $ip -T3"
-	cmd2="nmap $ip -sV -sC -T3 -oN nmap-med.txt"
-	cmd3="nmap $ip -sV -sC -T3 -p- -oN nmap-all.txt"
+	if [[ $scan == nmap || $scan == Nmap ]]; then
+		cmd1="nmap $ip -T3"
+		cmd2="nmap $ip -sV -sC -T3 -oN nmap-med.txt"
+		cmd3="nmap $ip -sV -sC -T3 -p- -oN nmap-all.txt"
 
-	read -p "Pilih basic/medium/allports(1,2,3):" typescan
+		read -p "Pilih basic/medium/allports(1,2,3):" typescan
 
-	if [ "$typescan" == 1 ]; then
-		echo "[~] Mengeksekusi Nmap Basic..."
-		sleep 2
-		$cmd1          # dulu "exec $1" -> exec akan mematikan shell, cukup panggil biasa
-	elif [ "$typescan" == 2 ]; then
-		echo "[~] Mengeksekusi Nmap Medium..."
-		sleep 2
-		$cmd2
-	elif [ "$typescan" == 3 ]; then
-		echo "[~] Memulai Scanning Allports Dan Layanan..."
-		sleep 2
-		$cmd3
+		if [ "$typescan" == 1 ]; then
+			echo "[~] Mengeksekusi Nmap Basic..."
+			sleep 2
+			$cmd1
+		elif [ "$typescan" == 2 ]; then
+			echo "[~] Mengeksekusi Nmap Medium..."
+			sleep 2
+			$cmd2
+		elif [ "$typescan" == 3 ]; then
+			echo "[~] Memulai Scanning Allports Dan Layanan..."
+			sleep 2
+			$cmd3
+		else
+			echo "[!] Pilihanmu Tidak ada"
+		fi
+	elif [[ $scan == masscan || $scan == Masscan ]]; then
+		mcmd1="masscan $ip -p1-1000 --rate 1 -oL masscan-small.txt"
+		mcmd2="masscan $ip -p1-10000 --rate 3 -oL masscan-med.txt"
+		mcmd3="masscan $ip -p1-65535 --rate 5 -oL masscan-all.txt"
+
+		read -p "Pilih basic/medium/allports(1,2,3):" typescan
+		if [ "$typescan" == 1 ]; then
+			echo "Memulai Masscan dengan opsi $typescan"
+			$mcmd1
+		elif [ "$typescan" == 2 ]; then
+			echo "Memulai Masscan dengan opsi $typescan"
+			$mcmd2
+		elif [ "$typescan" == 3 ]; then
+			echo "Memulai Masscan dengan opsi $typescan"
+			$mcmd3
+		else
+			echo "[!] Pilihanmu Tidak ada"
+		fi
 	else
-		echo "[!] Pilihanmu Tidak ada"
+		echo "[!] Tipe scan tidak dikenali"
 	fi
-fi
 
-
-#===Subdomain discovery===#
-
+# ==== SUBDOMAIN DISCOVERY ====
 sub="subfinder -d $domain -o subdomain-dis.txt"
 echo "[~] Subdomain Discovery"
 read -p "[?] Lakukan Pemindaian Subdomain Pada target? Y/n:" subd
-    if [[ $subd == y || $subd == Y ]]; then
-        echo "[+] Melakukan Pemindaian Subdomain..."
-        sleep 2
-        eval $sub
-        echo "[+] Output Di simpan di subdomain-dis.txt"
-    else
-        echo "[!] Mengabaikan Subdomain enum"
-    fi
 
-#===Path Discovery===#
+if [[ $subd == y || $subd == Y ]]; then
+	echo "[+] Melakukan Pemindaian Subdomain..."
+	sleep 2
+	eval $sub
+	echo "[+] Output Di simpan di subdomain-dis.txt"
+else
+	echo "[!] Mengabaikan Subdomain enum"
+fi
 
-gobus="gobuster dir -u https://$domain -w /usr/share/wordlists/dirb/common.txt -o gobus.txt"
+# ==== PATH DISCOVERY ====
+gobus="gobuster dir -u $domain -w /usr/share/wordlists/dirb/common.txt -o gobus.txt"
 dirbs="dirb https://$domain -o dirbs.txt"
 echo "[~] Tahapan Dir Enum"
 read -p "[?] Lakukan Directory enumeration? Y/n:" dir
-    if [[ $dir == y || $dir == Y ]]; then
-    read -p "[?] Pilih Tools yang akan di gunakan(gobuster,dirb):" t
-        if [[ $t == gobuster || $t == Gobuster ]]; then
-            echo "[~] Mengunakan Gobuster..."
-            sleep 2
-            eval $gobus
-        elif [[ $t == dirb || $t == dirbs ]]; then
-            echo "[~] Menggunakan Dirb..."
-            sleep 2
-            eval $dirbs
-        else
-            echo "[~] Skipping.."
-            sleep 2
-        fi
-    fi
 
-##====Pindai Teknologi target===#
+if [[ $dir == y || $dir == Y ]]; then
+	read -p "[?] Pilih Tools yang akan di gunakan(gobuster,dirb):" t
 
-techs="nuclei -u $domain -o nuclei-tech.txt"
+	if [[ $t == gobuster || $t == Gobuster ]]; then
+		echo "[~] Mengunakan Gobuster..."
+		sleep 2
+		eval $gobus
+	elif [[ $t == dirb || $t == dirbs ]]; then
+		echo "[~] Menggunakan Dirb..."
+		sleep 2
+		eval $dirbs
+	else
+		echo "[~] Skipping.."
+		sleep 2
+	fi
+fi
+
+# ==== PINDAI TEKNOLOGI TARGET ====
+tech="nuclei -u https://$domain -o nuclei-tech.txt"
 echo "[~] Melakukan Pemindaian Teknologi.."
 sleep 2
 read -p "Detect teknologi Target? Y/n:" tech
-    if [[ $tech == y || $tech == Y ]]; then
-        echo "[~] Memulai Memindai..."
-        sleep 2
-        eval $techs
-    else
-        echo "[!] Technology Scanning Di batalkan.."
-        sleep 2
-    fi
+
+if [[ $tech == y || $tech == Y ]]; then
+	echo "[~] Memulai Memindai..."
+	sleep 2
+	eval $tech
+else
+	echo "[!] Technology Scanning Di batalkan.."
+	sleep 2
+fi
 
 echo "[+] Pemindaian Selesai, Follow On Instagram @nama.disini for support"
