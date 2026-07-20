@@ -145,7 +145,7 @@ read -p "[?] Lakukan Directory enumeration? Y/n:" dir
 
 ##====Pindai Teknologi target===#
 
-tech="nuclei -u $domain -o nuclei-tech.txt"
+techs="nuclei -u $domain -o nuclei-tech.txt"
 echo "[~] Melakukan Pemindaian Teknologi.."
 sleep 2
 read -p "Detect teknologi Target? Y/n:" tech
