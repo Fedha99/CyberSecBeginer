@@ -123,7 +123,7 @@ read -p "[?] Lakukan Pemindaian Subdomain Pada target? Y/n:" subd
 
 #===Path Discovery===#
 
-gobus="gobuster dir -u $domain -w /usr/share/wordlists/dirb/common.txt -o gobus.txt"
+gobus="gobuster dir -u https://$domain -w /usr/share/wordlists/dirb/common.txt -o gobus.txt"
 dirbs="dirb https://$domain -o dirbs.txt"
 echo "[~] Tahapan Dir Enum"
 read -p "[?] Lakukan Directory enumeration? Y/n:" dir
