@@ -21,10 +21,10 @@ echo "Checking Tools..."
 sleep 2
 
 # ==== LOOP CEK & INSTALL TOOLS ====
-for tools in nmap gobuster nuclei subfinder dirb httpx; do
+for tools in nmap gobuster nuclei subfinder dirb; do
 	if ! command -v "$tools" &> /dev/null; then
 		echo "[!] Tools $tools Tidak Di Temukan"
-		read -p "[?] Install Tools Sekarang (Y/n)?" install
+		read -p "[?] Install Tools Sekarang (Y/n):" install
 
 		if [[ $install == y || $install == Y ]]; then
 			echo "[~] Detecting OS Anda..."
@@ -78,7 +78,7 @@ done                   # <- tutup for tools (dulu ini "done" nyasar duluan sebel
 
 # ==== BAGIAN SCANNING, DILUAR LOOP TOOLS ====
 # (dulu bagian ini nyangkut DI DALAM loop for, sekarang dipindah keluar)
-read -p "[~] Pilih Type Scanning (Nmap,masscan)" scan
+read -p "[~] Pilih Type Scanning (Nmap,masscan):" scan
 
 if [[ $scan == nmap || $scan == Nmap ]]; then
 	# Nama variabel gak boleh diawali angka & gak boleh ada spasi di sekitar "="
@@ -102,49 +102,60 @@ if [[ $scan == nmap || $scan == Nmap ]]; then
 		sleep 2
 		$cmd3
 	else
-		echo "Pilihanmu Tidak ada"
+		echo "[!] Pilihanmu Tidak ada"
 	fi
 fi
 
 
-#===Discovery===#
+#===Subdomain discovery===#
 
-gobus="gobuster dir -u http://$domain -w /usr/share/wordlists/dirb/common.txt"
-dirbs="dirb http://$domain"
-
-echo "[~] Discovery Domain Atau IP"
-read -p "Masukkan nama tools yang ingin anda gunakan (tersedia:dirb,gobuster,ALL)" discovery
-	if [[ $discovery == gobuster || $discovery == Gobuster ]]; then
-		echo "[~] Menggunakan Tools $discovery"
-		sleep 2
-		eval $gobus
-	elif [[ $discovery == dirb || $discovery == Dirb ]]; then
-		echo "[~] Menggunakan Tools $discovery"
-		sleep 2
-		eval $dirbs
-	elif [[ $discovery == ALL || $discovery == All || $discovery == all ]]; then
-		echo "[~] Menggunakan Semua Tools..."
-		sleep 2
-		eval $gobus
-		eval $dirbs
-	else
-		echo "[!] Tools Tidak Tersedia, Tambahkan sendiri di script"
-		exit 1
-	fi
-
-#===subDomain-Finder===#
-
+sub="subfinder -d $domain -o subdomain-dis.txt"
 echo "[~] Subdomain Discovery"
-read -p "Lakukan Subdomain Discovery? Y/n" subd
-  if [[ $subd == Y || $subd == y ]]; then
-    echo "Mencoba menemukan Subdomain..."
-    subfinder -d $domain -o subdomain-dis.txt
-	read -p "Scan Teknologi Domain? Y/n" tech
-		if [[ $tech == y || $tech == Y]]; then
-			
-  else
-    echo "[!] Pemindaian tidak dilakukan"
-  fi
+read -p "[?] Lakukan Pemindaian Subdomain Pada target? Y/n:" subd
+    if [[ $subd == y || $subd == Y ]]; then
+        echo "[+] Melakukan Pemindaian Subdomain..."
+        sleep 2
+        eval $sub
+        echo "[+] Output Di simpan di subdomain-dis.txt"
+    else
+        echo "[!] Mengabaikan Subdomain enum"
+    fi
 
-		
-		
+#===Path Discovery===#
+
+gobus="gobuster dir -u $domain -w /usr/share/wordlists/dirb/common.txt -o gobus.txt"
+dirbs="dirb https://$domain -o dirbs.txt"
+echo "[~] Tahapan Dir Enum"
+read -p "[?] Lakukan Directory enumeration? Y/n:" dir
+    if [[ $dir == y || $dir == Y ]]; then
+    read -p "[?] Pilih Tools yang akan di gunakan(gobuster,dirb):" t
+        if [[ $t == gobuster || $t == Gobuster ]]; then
+            echo "[~] Mengunakan Gobuster..."
+            sleep 2
+            eval $gobus
+        elif [[ $t == dirb || $t == dirbs ]]; then
+            echo "[~] Menggunakan Dirb..."
+            sleep 2
+            eval $dirbs
+        else
+            echo "[~] Skipping.."
+            sleep 2
+        fi
+    fi
+
+##====Pindai Teknologi target===#
+
+tech="nuclei -u $domain -o nuclei-tech.txt"
+echo "[~] Melakukan Pemindaian Teknologi.."
+sleep 2
+read -p "Detect teknologi Target? Y/n:" tech
+    if [[ $tech == y || $tech == Y ]]; then
+        echo "[~] Memulai Memindai..."
+        sleep 2
+        eval $tech
+    else
+        echo "[!] Technology Scanning Di batalkan.."
+        sleep 2
+    fi
+
+echo "[+] Pemindaian Selesai, Follow On Instagram @nama.disini for support"
