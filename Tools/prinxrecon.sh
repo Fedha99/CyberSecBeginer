@@ -158,7 +158,7 @@ if [[ $dir == y || $dir == Y ]]; then
 fi
 
 # ==== PINDAI TEKNOLOGI TARGET ====
-tech="nuclei -u https://$domain -o nuclei-tech.txt"
+techs="nuclei -u https://$domain -o nuclei-tech.txt"
 echo "[~] Melakukan Pemindaian Teknologi.."
 sleep 2
 read -p "Detect teknologi Target? Y/n:" tech
@@ -166,7 +166,7 @@ read -p "Detect teknologi Target? Y/n:" tech
 if [[ $tech == y || $tech == Y ]]; then
 	echo "[~] Memulai Memindai..."
 	sleep 2
-	eval $tech
+	eval $techs
 else
 	echo "[!] Technology Scanning Di batalkan.."
 	sleep 2
