@@ -152,7 +152,7 @@ read -p "Detect teknologi Target? Y/n:" tech
     if [[ $tech == y || $tech == Y ]]; then
         echo "[~] Memulai Memindai..."
         sleep 2
-        eval $tech
+        eval $techs
     else
         echo "[!] Technology Scanning Di batalkan.."
         sleep 2
